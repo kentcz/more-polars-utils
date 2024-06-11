@@ -32,7 +32,7 @@ jobs:
         poetry run flake8 --ignore E501,E121,W503,W504,E712,W605 more_polars_utils
     - name: Run mypy
       run: |
-        poetry run mypy pyspark_dataframe_extras
+        poetry run mypy more_polars_utils
     - name: Upload pytest test results
       uses: actions/upload-artifact@v3
       with:
