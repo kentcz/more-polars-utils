@@ -12,6 +12,7 @@ polars = "^0.20.0"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.2"
 flake8 = "4.0.1"
+mypy = "^0.950"
 
 [build-system]
 requires = ["poetry-core"]
