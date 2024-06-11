@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "more-polars-utils"
+version = "0.1.0"
+description = "Utility functions for polars"
+authors = ["Kent Czechowski <kentcz@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+polars = "^0.20.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.1.2"
+flake8 = "4.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
