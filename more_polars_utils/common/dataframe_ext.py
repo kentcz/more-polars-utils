@@ -34,7 +34,7 @@ def frequency_count(
     :param frequency_column: The desired name for the `frequency` column
     :return: The dataframe
     """
-    df_count = self.count()
+    df_count = len(self)
 
     return (
         self
@@ -42,11 +42,11 @@ def frequency_count(
         .agg(
             pl.count("*").alias(count_column)
         )
-        .withColumn(frequency_column, pl.col(count_column) / df_count)
+        .with_columns((pl.col(count_column) / df_count).alias(frequency_column))
         .sort(count_column, reverse=True)
     )
 
 
 # Add the methods to the DataFrame class
-pl.DataFrame.print_count = print_count
-pl.DataFrame.frequency_count = frequency_count
+pl.DataFrame.print_count = print_count          # type: ignore[attr-defined]
+pl.DataFrame.frequency_count = frequency_count  # type: ignore[attr-defined]
