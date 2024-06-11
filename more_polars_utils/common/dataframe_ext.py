@@ -42,7 +42,9 @@ def frequency_count(
         .agg(
             pl.count("*").alias(count_column)
         )
-        .with_columns((pl.col(count_column) / pl.lit(df_count)).alias(frequency_column))
+        .with_columns(
+            **{frequency_column: (pl.col(count_column) / pl.lit(df_count))}
+        )
         .sort(count_column, descending=True)
     )
 
