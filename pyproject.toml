@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "more-polars-utils"
-version = "0.1.0"
+version = "0.1.1"
 description = "Utility functions for polars"
 authors = ["Kent Czechowski <kentcz@hotmail.com>"]
 readme = "README.md"
