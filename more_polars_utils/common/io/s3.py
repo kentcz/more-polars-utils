@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 import polars as pl
@@ -16,6 +17,16 @@ def file_exists(path: str) -> bool:
 
 def is_directory(path: str) -> bool:
     return S3_FILESYSTEM.isdir(path)
+
+
+def make_directories(path: str, *args, **kwargs):
+    S3_FILESYSTEM.makedirs(path, *args, **kwargs)
+
+
+def file_last_modified(path: str) -> datetime:
+    assert (file_exists(path))
+    file_info = S3_FILESYSTEM.info(path)
+    return file_info["LastModified"]
 
 
 def list_nested_partitions(path: str, file_extension="parquet", s3_protocol="s3://") -> list[str]:

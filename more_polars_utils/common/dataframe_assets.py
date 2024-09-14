@@ -1,11 +1,12 @@
 import functools
 import os
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional, Callable
 
 import polars as pl
 
-from more_polars_utils.common.io import write_parquet, read_parquet, file_exists
+from more_polars_utils.common.io import write_parquet, read_parquet, file_exists, make_directories, file_last_modified
 
 
 class AssetManager:
@@ -39,8 +40,8 @@ class Project:
 
     @staticmethod
     def _test_path(path: str) -> str:
-        if path and not os.path.isdir(path):
-            os.makedirs(path)
+        if path and not file_exists(path):
+            make_directories(path)
         return path
 
     @property
@@ -81,6 +82,7 @@ class PolarsParquetAsset:
             func: Optional[Callable] = None,
             *,
             project: Project = ACTIVE_PROJECT,
+            dependency_assets: Optional[list[str]] = None,
             asset_name: str = None,
             verbose=False,
             is_temporary: bool = False,
@@ -89,6 +91,7 @@ class PolarsParquetAsset:
         self.asset_name = asset_name
         self.verbose = verbose
         self.project = project
+        self.dependency_assets = dependency_assets if dependency_assets is not None else []
         self.force_reload = force_reload
         self.is_temporary = is_temporary
 
@@ -147,3 +150,9 @@ class PolarsParquetAsset:
             return obj
 
         return wrapper
+
+    def last_modified(self) -> Optional[datetime]:
+        if file_exists(self.parquet_path()):
+            return file_last_modified(self.parquet_path())
+        else:
+            return None

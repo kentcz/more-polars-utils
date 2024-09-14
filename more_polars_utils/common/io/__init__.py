@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import more_polars_utils.common.io.local as io_local  # ignore: type
 import more_polars_utils.common.io.s3 as io_s3  # ignore: type
 
@@ -17,7 +19,15 @@ def is_directory(path: str) -> bool:
     return select_io(path).is_directory(path)
 
 
-def list_nested_partitions(path: str, file_extension=".parquet", *args, **kwargs) -> list[str]:
+def make_directories(path: str, *args, **kwargs):
+    return select_io(path).make_directories(path, *args, **kwargs)
+
+
+def file_last_modified(path: str) -> datetime:
+    return select_io(path).file_last_modified(path)
+
+
+def list_nested_partitions(path: str, file_extension="parquet", *args, **kwargs) -> list[str]:
     return select_io(path).list_nested_partitions(path, file_extension, *args, **kwargs)
 
 
