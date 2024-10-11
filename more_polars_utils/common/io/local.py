@@ -33,6 +33,10 @@ def write_parquet(df: pl.DataFrame, path: str, *args, **kwargs):
     df.write_parquet(path, *args, **kwargs)
 
 
+def write_csv(df: pl.DataFrame, path: str, *args, **kwargs):
+    df.write_csv(path, *args, **kwargs)
+
+
 def parquet_file_size(path: str, file_extension: str = "parquet", **kwargs) -> Optional[int]:
     assert (file_exists(path))
 
