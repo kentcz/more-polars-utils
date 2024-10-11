@@ -39,5 +39,9 @@ def write_parquet(df, path: str, *args, **kwargs):
     return select_io(path).write_parquet(df, path, *args, **kwargs)
 
 
+def write_csv(df, path: str, *args, **kwargs):
+    return select_io(path).write_csv(df, path, *args, **kwargs)
+
+
 def parquet_file_size(path: str) -> int:
     return select_io(path).parquet_file_size(path)

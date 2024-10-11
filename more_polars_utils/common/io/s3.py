@@ -61,6 +61,11 @@ def write_parquet(df: pl.DataFrame, path: str, *args, **kwargs):
         df.write_parquet(f, *args, **kwargs)
 
 
+def write_csv(df: pl.DataFrame, path: str, *args, **kwargs):
+    with S3_FILESYSTEM.open(path, "wb") as f:
+        df.write_csv(f, *args, **kwargs)
+
+
 def read_parquet(path: str, *args, **kwargs) -> pl.DataFrame:
     assert (file_exists(path))
     if is_directory(path):

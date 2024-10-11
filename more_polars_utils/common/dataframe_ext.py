@@ -2,7 +2,7 @@ import polars as pl
 from typing import Optional, Sequence
 
 from polars import Expr
-from more_polars_utils.common.io import write_parquet
+from more_polars_utils.common.io import write_parquet, write_csv
 
 
 def print_count(self: pl.DataFrame, label: Optional[str] = None) -> pl.DataFrame:
@@ -79,3 +79,4 @@ def print_csv(self: pl.DataFrame):
 pl.DataFrame.more_print_count = print_count            # type: ignore[attr-defined]
 pl.DataFrame.more_frequency_count = frequency_count    # type: ignore[attr-defined]
 pl.DataFrame.more_write_parquet = write_parquet        # type: ignore[attr-defined]
+pl.DataFrame.more_write_csv = write_csv                # type: ignore[attr-defined]
