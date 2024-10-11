@@ -2,7 +2,7 @@ import functools
 import os
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Callable
+from typing import Optional, Callable, Dict, List, Union
 
 import polars as pl
 
@@ -82,7 +82,7 @@ class PolarsParquetAsset:
             func: Optional[Callable] = None,
             *,
             project: Project = ACTIVE_PROJECT,
-            dependency_assets: Optional[list[str]] = None,
+            dependency_assets: Optional[List[Union[str, "PolarsParquetAsset"]]] = None,
             asset_name: str = None,
             verbose=False,
             is_temporary: bool = False,
@@ -131,10 +131,22 @@ class PolarsParquetAsset:
     def _write_to_cache(self, df: pl.DataFrame):
         write_parquet(df, self.parquet_path())
 
+    def has_updated_dependencies(self) -> bool:
+        for dependency in self.dependency_assets:
+            if isinstance(dependency, str):
+                asset = ASSET_MANAGER.assets[dependency]
+            else:
+                asset = dependency
+            if asset.last_modified() is None:
+                return True
+            if asset.last_modified() > self.last_modified():
+                return True
+        return False
+
     def __call__(self, *args, **kwargs) -> pl.DataFrame:
 
         # Check to see if the asset needs to be built then cached, before loading from cache
-        if self.force_reload or not file_exists(self.parquet_path()):
+        if self.force_reload or not file_exists(self.parquet_path()) or self.has_updated_dependencies():
             self._verbose_log(f"Cache miss for {self.parquet_path()}")
             df = self.materialize(*args, **kwargs)
 
