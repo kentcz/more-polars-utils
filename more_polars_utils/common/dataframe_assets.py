@@ -1,8 +1,7 @@
 import functools
-import os
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Callable, Dict, List, Union
+from typing import Optional, Callable, List, Union
 
 import polars as pl
 

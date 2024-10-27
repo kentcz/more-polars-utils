@@ -1,10 +1,10 @@
-from datetime import datetime, timezone, tzinfo
+import os
+from datetime import datetime, timezone
 from glob import glob
 from os import PathLike
 from typing import Union, Optional
 
 import polars as pl
-import os
 
 
 def file_exists(path: Union[str, PathLike[str]]) -> bool:
