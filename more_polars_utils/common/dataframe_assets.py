@@ -131,8 +131,8 @@ class PolarsParquetAsset:
     def _write_to_cache(self, df: pl.DataFrame):
         write_parquet(df, self.parquet_path())
 
-        # To prevent identical timestamps, sleep for 1 ms
-        sleep(0.001)
+        # To prevent identical timestamps, sleep for 10 ms
+        sleep(0.01)
 
     def has_updated_dependencies(self) -> bool:
         for dependency in self.dependency_assets:

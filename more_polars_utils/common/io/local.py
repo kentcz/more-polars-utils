@@ -22,7 +22,7 @@ def make_directories(path: Union[str, PathLike[str]], *args, **kwargs):
 def file_last_modified(path: Union[str, PathLike[str]]) -> datetime:
     assert (file_exists(path))
     file_timestamp = os.path.getmtime(path)
-    return datetime.utcfromtimestamp(file_timestamp).replace(tzinfo=timezone.utc)
+    return datetime.fromtimestamp(file_timestamp, timezone.utc)
 
 
 def list_nested_partitions(path: Union[str, PathLike[str]], file_extension="parquet") -> list[str]:
