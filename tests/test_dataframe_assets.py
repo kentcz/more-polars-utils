@@ -103,3 +103,25 @@ class PolarsParquetAssetTestCase(unittest.TestCase):
 
         # Check that the asset was saved to the correct location
         self.assertTrue(os.path.exists(expected_path))
+
+
+    def test_timestamp(self):
+        # Define two new assets
+        @PolarsParquetAsset.decorator()
+        def new_dataframe_1() -> pl.DataFrame:
+            return self.sample_df
+
+        @PolarsParquetAsset.decorator()
+        def new_dataframe_2() -> pl.DataFrame:
+            return self.sample_df
+
+        # Build the asset
+        new_df_1 = new_dataframe_1()
+        new_df_2 = new_dataframe_2()
+
+        assert_frame_equal(new_df_1, self.sample_df)
+        assert_frame_equal(new_df_2, self.sample_df)
+
+        # Since new_dataframe_1 was created before new_dataframe_2,
+        # new_dataframe_1's timestamp should be less than new_dataframe_2's timestamp
+        self.assertLess(new_dataframe_1.last_modified(), new_dataframe_2.last_modified())

@@ -1,11 +1,12 @@
 import functools
-import os
 from dataclasses import dataclass
-from typing import Optional, Callable
+from datetime import datetime
+from time import sleep
+from typing import Optional, Callable, List, Union
 
 import polars as pl
 
-from more_polars_utils.common.io import write_parquet, read_parquet, file_exists
+from more_polars_utils.common.io import write_parquet, read_parquet, file_exists, make_directories, file_last_modified
 
 
 class AssetManager:
@@ -39,8 +40,8 @@ class Project:
 
     @staticmethod
     def _test_path(path: str) -> str:
-        if path and not os.path.isdir(path):
-            os.makedirs(path)
+        if path and not file_exists(path):
+            make_directories(path)
         return path
 
     @property
@@ -81,6 +82,7 @@ class PolarsParquetAsset:
             func: Optional[Callable] = None,
             *,
             project: Project = ACTIVE_PROJECT,
+            dependency_assets: Optional[List[Union[str, "PolarsParquetAsset"]]] = None,
             asset_name: str = None,
             verbose=False,
             is_temporary: bool = False,
@@ -89,6 +91,7 @@ class PolarsParquetAsset:
         self.asset_name = asset_name
         self.verbose = verbose
         self.project = project
+        self.dependency_assets = dependency_assets if dependency_assets is not None else []
         self.force_reload = force_reload
         self.is_temporary = is_temporary
 
@@ -128,10 +131,25 @@ class PolarsParquetAsset:
     def _write_to_cache(self, df: pl.DataFrame):
         write_parquet(df, self.parquet_path())
 
+        # To prevent identical timestamps, sleep for 10 ms
+        sleep(0.01)
+
+    def has_updated_dependencies(self) -> bool:
+        for dependency in self.dependency_assets:
+            if isinstance(dependency, str):
+                asset = ASSET_MANAGER.assets[dependency]
+            else:
+                asset = dependency
+            if asset.last_modified() is None:
+                return True
+            if asset.last_modified() > self.last_modified():
+                return True
+        return False
+
     def __call__(self, *args, **kwargs) -> pl.DataFrame:
 
         # Check to see if the asset needs to be built then cached, before loading from cache
-        if self.force_reload or not file_exists(self.parquet_path()):
+        if self.force_reload or not file_exists(self.parquet_path()) or self.has_updated_dependencies():
             self._verbose_log(f"Cache miss for {self.parquet_path()}")
             df = self.materialize(*args, **kwargs)
 
@@ -147,3 +165,9 @@ class PolarsParquetAsset:
             return obj
 
         return wrapper
+
+    def last_modified(self) -> Optional[datetime]:
+        if file_exists(self.parquet_path()):
+            return file_last_modified(self.parquet_path())
+        else:
+            return None

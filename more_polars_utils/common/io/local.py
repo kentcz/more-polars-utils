@@ -1,9 +1,10 @@
+import os
+from datetime import datetime, timezone
 from glob import glob
 from os import PathLike
 from typing import Union, Optional
 
 import polars as pl
-import os
 
 
 def file_exists(path: Union[str, PathLike[str]]) -> bool:
@@ -14,7 +15,17 @@ def is_directory(path: Union[str, PathLike[str]]) -> bool:
     return os.path.isdir(path)
 
 
-def list_nested_partitions(path: Union[str, PathLike[str]], file_extension=".parquet") -> list[str]:
+def make_directories(path: Union[str, PathLike[str]], *args, **kwargs):
+    os.makedirs(path, *args, **kwargs)
+
+
+def file_last_modified(path: Union[str, PathLike[str]]) -> datetime:
+    assert (file_exists(path))
+    file_timestamp = os.path.getmtime(path)
+    return datetime.fromtimestamp(file_timestamp, timezone.utc)
+
+
+def list_nested_partitions(path: Union[str, PathLike[str]], file_extension="parquet") -> list[str]:
     formatted_path = str(path)[:-1] if str(path).endswith('/') else str(path)
     relevant_files = glob(f'{formatted_path}/**/*.{file_extension}', recursive=True)
     return relevant_files
