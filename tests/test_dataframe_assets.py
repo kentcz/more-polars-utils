@@ -22,7 +22,7 @@ class PolarsParquetAssetTestCase(unittest.TestCase):
         self.temporary_project_dir = tempfile.TemporaryDirectory()
         self.temporary_scratch_dir = tempfile.TemporaryDirectory()
 
-        # Setup the project configuration
+        # Set the project configuration
         ACTIVE_PROJECT.set_configuration(
             ProjectConfiguration(
                 project_name="test_project",

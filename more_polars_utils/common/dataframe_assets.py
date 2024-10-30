@@ -28,10 +28,10 @@ class ProjectConfiguration:
 
 
 class Project:
-    def __init__(self):
-        self._project_name = None
-        self._asset_path = None
-        self._scratch_path = None
+    def __init__(self, project_name: str = None, asset_path: str = None, scratch_path: str = None):
+        self._project_name = project_name
+        self._asset_path = asset_path
+        self._scratch_path = scratch_path
 
     def set_configuration(self, configuration: ProjectConfiguration):
         self.project_name = configuration.project_name
