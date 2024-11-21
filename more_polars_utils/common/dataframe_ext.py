@@ -7,9 +7,9 @@ from polars.type_aliases import IntoExpr
 
 
 def optional_limit(self: pl.DataFrame, limit: Optional[int] = None) -> pl.DataFrame:
-    df: pl.DataFrame = self
+    df = self
     if limit:
-        df: pl.DataFrame = self.head(limit)
+        df = self.head(limit)
     return df
 
 
@@ -105,7 +105,7 @@ def show_vertical(self: pl.DataFrame, limit: int = 1) -> None:
     :param limit: The number of rows to print, if limit <= 0, print all rows
     """
 
-    vertical_df = optional_limit(self, limit).transpose(include_header=True)
+    vertical_df: pl.DataFrame = optional_limit(self, limit).transpose(include_header=True)
 
     with pl.Config(tbl_rows=vertical_df.height):
         print(vertical_df)
