@@ -6,6 +6,13 @@ from more_polars_utils.common.io import write_parquet, write_csv
 from polars.type_aliases import IntoExpr
 
 
+def optional_limit(self: pl.DataFrame, limit: Optional[int] = None) -> pl.DataFrame:
+    df: pl.DataFrame = self
+    if limit:
+        df: pl.DataFrame = self.head(limit)
+    return df
+
+
 def print_count(self: pl.DataFrame, label: Optional[str] = None) -> pl.DataFrame:
     """
         Print the datafame count without terminating a method chain
@@ -73,10 +80,9 @@ def print_csv(self: pl.DataFrame, limit: Optional[int] = None) -> None:
     :param limit: The number of rows to print
     """
 
-    if limit:
-        print(self.head(limit).write_csv())
-    else:
-        print(self.write_csv())
+    print(
+        optional_limit(self, limit).write_csv()
+    )
 
 
 def show(self: pl.DataFrame, limit: int = 20) -> None:
@@ -99,7 +105,7 @@ def show_vertical(self: pl.DataFrame, limit: int = 1) -> None:
     :param limit: The number of rows to print, if limit <= 0, print all rows
     """
 
-    vertical_df = self.head(limit).transpose(include_header=True)
+    vertical_df = optional_limit(self, limit).transpose(include_header=True)
 
     with pl.Config(tbl_rows=vertical_df.height):
         print(vertical_df)
