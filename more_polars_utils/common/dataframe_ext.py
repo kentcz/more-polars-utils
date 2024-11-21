@@ -78,6 +78,7 @@ def print_csv(self: pl.DataFrame, limit: Optional[int] = None) -> None:
     else:
         print(self.write_csv())
 
+
 def show(self: pl.DataFrame, limit: int = 20) -> None:
     """
     Print the first `limit` rows of the dataframe
@@ -102,6 +103,7 @@ def show_vertical(self: pl.DataFrame, limit: int = 1) -> None:
 
     with pl.Config(tbl_rows=vertical_df.height):
         print(vertical_df)
+
 
 # Add the methods to the DataFrame class
 pl.DataFrame.more_print_count = print_count            # type: ignore[attr-defined]
