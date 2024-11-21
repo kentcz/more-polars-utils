@@ -3,6 +3,14 @@ from typing import Optional, Sequence
 
 from polars import Expr
 from more_polars_utils.common.io import write_parquet, write_csv
+from polars.type_aliases import IntoExpr
+
+
+def optional_limit(self: pl.DataFrame, limit: Optional[int] = None) -> pl.DataFrame:
+    df = self
+    if limit:
+        df = self.head(limit)
+    return df
 
 
 def print_count(self: pl.DataFrame, label: Optional[str] = None) -> pl.DataFrame:
@@ -24,9 +32,9 @@ def print_count(self: pl.DataFrame, label: Optional[str] = None) -> pl.DataFrame
 
 def frequency_count(
         self: pl.DataFrame,
-        group_by_column,
-        count_column="count",
-        frequency_column="frequency"
+        group_by_column: IntoExpr,
+        count_column: str = "count",
+        frequency_column: str = "frequency"
 ) -> pl.DataFrame:
     """
     Group by `group_by_column` then generate `count` and `frequency` columns for the grouped data
@@ -64,7 +72,7 @@ def check_unique(self: pl.DataFrame, subset: str | Expr | Sequence[str | Expr] |
     return self.height == self.n_unique(subset)
 
 
-def print_csv(self: pl.DataFrame):
+def print_csv(self: pl.DataFrame, limit: Optional[int] = None) -> None:
     """
     Print the first `limit` rows of the dataframe in CSV format
 
@@ -72,11 +80,43 @@ def print_csv(self: pl.DataFrame):
     :param limit: The number of rows to print
     """
 
-    print(self.write_csv())
+    print(
+        optional_limit(self, limit).write_csv()
+    )
+
+
+def show(self: pl.DataFrame, limit: int = 20) -> None:
+    """
+    Print the first `limit` rows of the dataframe
+
+    :param self: The dataframe
+    :param limit: The number of rows to print, if limit <= 0, print all rows
+    """
+
+    with pl.Config(tbl_rows=limit):
+        print(self)
+
+
+def show_vertical(self: pl.DataFrame, limit: int = 1) -> None:
+    """
+    Print the first `limit` rows of the dataframe in CSV format
+
+    :param self: The dataframe
+    :param limit: The number of rows to print, if limit <= 0, print all rows
+    """
+
+    vertical_df: pl.DataFrame = optional_limit(self, limit).transpose(include_header=True)
+
+    with pl.Config(tbl_rows=vertical_df.height):
+        print(vertical_df)
 
 
 # Add the methods to the DataFrame class
 pl.DataFrame.more_print_count = print_count            # type: ignore[attr-defined]
 pl.DataFrame.more_frequency_count = frequency_count    # type: ignore[attr-defined]
+pl.DataFrame.more_check_unique = check_unique          # type: ignore[attr-defined]
+pl.DataFrame.more_print_csv = print_csv                # type: ignore[attr-defined]
+pl.DataFrame.more_show = show                          # type: ignore[attr-defined]
+pl.DataFrame.more_show_vertical = show_vertical        # type: ignore[attr-defined]
 pl.DataFrame.more_write_parquet = write_parquet        # type: ignore[attr-defined]
 pl.DataFrame.more_write_csv = write_csv                # type: ignore[attr-defined]
